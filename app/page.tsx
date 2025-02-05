@@ -39,6 +39,7 @@ import { Select } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { initialData } from "@/constant";
+import { STATUS_OPTIONS, StatusEnum } from "@/constants/optionsConstant";
 
 // Define your data model.
 export interface Milestone {
@@ -50,7 +51,7 @@ export interface Milestone {
   reward: number;
   cumulativeReward: number;
   variation: number;
-  status: string;
+  status: StatusEnum;
 }
 
 function compareDates(date1: string, date2: string): number {
@@ -96,7 +97,7 @@ export default function ConstructionContractTable() {
   }, [data]);
 
   const updateRow = React.useCallback(
-    (index: number, key: keyof Milestone, value: string | number): void => {
+    (index: number, key: keyof Milestone, value: string | number | StatusEnum): void => {
       setData((prevData) => {
         const updatedData = [...prevData];
         updatedData[index] = { ...updatedData[index], [key]: value };
@@ -216,7 +217,7 @@ export default function ConstructionContractTable() {
         header: "Planned Date",
         accessorKey: "plannedDate",
         cell: ({ row }) => {
-          const isCompleted = row.original.status === "Completed";
+          const isCompleted = row.original.status === StatusEnum.COMPLETED;
           return (
             <Input
               type="date"
@@ -278,12 +279,8 @@ export default function ConstructionContractTable() {
         cell: ({ row }) => (
           <Select
             value={row.original.status}
-            onChange={(value: string) => updateRow(row.index, "status", value)}
-            options={[
-              { label: "Pending", value: "Pending" },
-              { label: "In Progress", value: "In Progress" },
-              { label: "Completed", value: "Completed" },
-            ]}
+            onChange={(value: string) => updateRow(row.index, "status", value as StatusEnum)}
+            options={STATUS_OPTIONS}
           />
         ),
       },
